@@ -1,47 +1,12 @@
-name: Build Android APK 🚀
-
-on:
-  push:
-    branches: [ main, master ]
-
-jobs:
-  build:
-    runs-on: ubuntu-latest
-
-    steps:
-    - name: Checkout Code 📂
-      uses: actions/checkout@v4
-
-    - name: Setup Bun ⚙️
-      uses: oven-sh/setup-bun@v1
-
-    - name: Install Dependencies 📦
-      run: bun install
-
-    - name: Next.js Export 🧪
+- name: Next.js Export 🧪
       run: |
         bun run build
+        echo "Checking directory structure:"
+        ls -R  # ده هيطبع لنا كل الفولدرات اللي طلعت عشان نعرف الـ out فين!
 
     - name: Sync Capacitor 🔄
       run: |
         bun add -d @capacitor/cli @capacitor/android
-        # دي الحركة الصايعة: هنكتب ملف الكونفيج بالإجبار قبل الـ sync
-        echo '{"appId": "com.lycans.fightclub", "appName": "Lycans Fight Club", "webDir": "out", "bundledWebRuntime": false}' > capacitor.config.json
+        # هنجرب نغير الـ webDir لـ '.' عشان لو الملفات طلعت في الروت
+        echo '{"appId": "com.lycans.fightclub", "appName": "Lycans Fight Club", "webDir": ".", "bundledWebRuntime": false}' > capacitor.config.json
         bunx cap sync
-
-    - name: Setup Java ☕
-      uses: actions/setup-java@v4
-      with:
-        distribution: 'zulu'
-        java-version: '17'
-
-    - name: Build APK with Gradle 🛠️
-      run: |
-        cd android
-        ./gradlew assembleDebug
-
-    - name: Upload APK Artifact 🎁
-      uses: actions/upload-artifact@v4
-      with:
-        name: Lycans-Fight-Club-APK
-        path: android/app/build/outputs/apk/debug/app-debug.apk
