@@ -21,10 +21,10 @@ jobs:
     - name: Next.js Export 🧪
       run: bun run build
 
-    - name: Sync Capacitor 🔄
+- name: Sync Capacitor 🔄
       run: |
+        bun add -d @capacitor/cli
         bunx cap sync
-
     - name: Setup Java ☕
       uses: actions/setup-java@v4
       with:
