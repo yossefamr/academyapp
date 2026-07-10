@@ -19,11 +19,13 @@ jobs:
       run: bun install
 
     - name: Next.js Export 🧪
-      run: bun run build
+      run: |
+        bun run build
+        mkdir -p out # التأكد من وجود الفولدر
 
     - name: Sync Capacitor 🔄
       run: |
-        bun add -d @capacitor/cli
+        bun add -d @capacitor/cli @capacitor/android
         bunx cap sync
 
     - name: Setup Java ☕
