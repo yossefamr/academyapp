@@ -21,11 +21,12 @@ jobs:
     - name: Next.js Export 🧪
       run: |
         bun run build
-        mkdir -p out # التأكد من وجود الفولدر
 
     - name: Sync Capacitor 🔄
       run: |
         bun add -d @capacitor/cli @capacitor/android
+        # دي الحركة الصايعة: هنكتب ملف الكونفيج بالإجبار قبل الـ sync
+        echo '{"appId": "com.lycans.fightclub", "appName": "Lycans Fight Club", "webDir": "out", "bundledWebRuntime": false}' > capacitor.config.json
         bunx cap sync
 
     - name: Setup Java ☕
