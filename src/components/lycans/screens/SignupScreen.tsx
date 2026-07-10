@@ -9,6 +9,7 @@ import { useAppStore } from '@/store/app-store';
 import { useToast } from '@/hooks/use-toast';
 import { Button } from '@/components/ui/button';
 import ThemeToggle from '@/components/lycans/ThemeToggle';
+import { ACADEMY } from '@/lib/academy';
 
 export default function SignupScreen() {
   const setView = useAppStore((s) => s.setView);
@@ -161,9 +162,9 @@ export default function SignupScreen() {
                 Sign in
               </button>
             </p>
-            <p className="mt-5 font-display text-[10px] tracking-[0.3em] text-blood/80">
-              WWW.LYCANSFIGHTCLUB.COM
-            </p>
+            <a href={ACADEMY.website} target="_blank" rel="noopener noreferrer" className="mt-5 font-display text-[10px] tracking-[0.3em] text-blood/80 hover:underline">
+              {ACADEMY.websiteDisplay.toUpperCase()}
+            </a>
           </div>
         </BorderGlow>
       </motion.div>

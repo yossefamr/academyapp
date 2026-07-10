@@ -2,13 +2,14 @@
 
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Loader2, Lock, User, Eye, EyeOff, AlertCircle, Facebook, Instagram } from 'lucide-react';
+import { Loader2, Lock, User, Eye, EyeOff, AlertCircle, Facebook, Instagram, Music2 } from 'lucide-react';
 import BorderGlow from '@/components/reactbits/BorderGlow';
 import { LycansEmblem, ClawMarks } from '@/components/lycans/logo';
 import { useAppStore } from '@/store/app-store';
 import { useToast } from '@/hooks/use-toast';
 import { Button } from '@/components/ui/button';
 import ThemeToggle from '@/components/lycans/ThemeToggle';
+import { ACADEMY } from '@/lib/academy';
 
 export default function LoginScreen() {
   const setView = useAppStore((s) => s.setView);
@@ -155,26 +156,34 @@ export default function LoginScreen() {
               </Button>
             </form>
 
-            {/* Social */}
+            {/* Social — real academy links */}
             <div className="mt-7 flex flex-col items-center gap-3">
               <p className="text-[11px] uppercase tracking-[0.2em] text-muted-foreground">Don&apos;t Have an Account?</p>
-              <div className="flex items-center gap-4">
-                {[Facebook, Instagram, ClawMarksIcon].map((Icon, i) => (
-                  <button
-                    key={i}
-                    onClick={() => setView('signup')}
-                    className="flex h-9 w-9 items-center justify-center rounded-full border border-border/60 bg-card/40 text-muted-foreground transition-all hover:border-blood/60 hover:text-blood"
-                    aria-label="social"
-                  >
-                    <Icon className="h-4 w-4" />
-                  </button>
-                ))}
+              <div className="flex items-center gap-3">
+                <a href={ACADEMY.instagram} target="_blank" rel="noopener noreferrer" aria-label="Instagram"
+                  className="flex h-9 w-9 items-center justify-center rounded-full border border-border/60 bg-card/40 text-muted-foreground transition-all hover:scale-110 hover:border-blood/60"
+                  style={{ color: undefined }} onMouseEnter={(e) => (e.currentTarget.style.color = '#E1306C')} onMouseLeave={(e) => (e.currentTarget.style.color = '')}>
+                  <Instagram className="h-4 w-4" />
+                </a>
+                <a href={ACADEMY.facebook} target="_blank" rel="noopener noreferrer" aria-label="Facebook"
+                  className="flex h-9 w-9 items-center justify-center rounded-full border border-border/60 bg-card/40 text-muted-foreground transition-all hover:scale-110 hover:border-blood/60"
+                  onMouseEnter={(e) => (e.currentTarget.style.color = '#1877F2')} onMouseLeave={(e) => (e.currentTarget.style.color = '')}>
+                  <Facebook className="h-4 w-4" />
+                </a>
+                <a href={ACADEMY.tiktok} target="_blank" rel="noopener noreferrer" aria-label="TikTok"
+                  className="flex h-9 w-9 items-center justify-center rounded-full border border-border/60 bg-card/40 text-muted-foreground transition-all hover:scale-110 hover:border-blood/60">
+                  <Music2 className="h-4 w-4" />
+                </a>
+                <button onClick={() => setView('signup')} aria-label="Sign up"
+                  className="flex h-9 w-9 items-center justify-center rounded-full border border-blood/60 bg-blood/10 text-blood transition-all hover:scale-110 hover:bg-blood/20">
+                  <ClawMarks color="var(--blood)" count={3} className="h-4 w-4" />
+                </button>
               </div>
             </div>
 
-            <p className="mt-7 font-display text-[10px] tracking-[0.3em] text-blood/80">
-              WWW.LYCANSFIGHTCLUB.COM
-            </p>
+            <a href={ACADEMY.website} target="_blank" rel="noopener noreferrer" className="mt-7 font-display text-[10px] tracking-[0.3em] text-blood/80 hover:underline">
+              {ACADEMY.websiteDisplay.toUpperCase()}
+            </a>
 
             {/* Demo hint */}
             <div className="mt-4 rounded-lg border border-border/50 bg-muted/30 px-3 py-2 text-center text-[10px] text-muted-foreground">
@@ -185,8 +194,4 @@ export default function LoginScreen() {
       </motion.div>
     </div>
   );
-}
-
-function ClawMarksIcon({ className }: { className?: string }) {
-  return <ClawMarks color="currentColor" count={3} className={className} />;
 }

@@ -1,4 +1,14 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+#!/usr/bin/env bun
+// Generates PWA app icons (192, 512, maskable) + favicon from the Lycans crest SVG.
+import sharp from 'sharp';
+import { mkdirSync, writeFileSync } from 'fs';
+import { join } from 'path';
+
+const OUT = join(process.cwd(), 'public', 'icons');
+mkdirSync(OUT, { recursive: true });
+
+// Lycans crest SVG — black bg, blood claw, silver moon ring
+const crest = (size: number) => `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="${size}" height="${size}">
   <defs>
     <radialGradient id="bg" cx="50%" cy="38%" r="70%">
       <stop offset="0%" stop-color="#1a0606"/>
@@ -58,4 +68,32 @@
     <stop offset="0%" stop-color="#000" stop-opacity="0"/>
     <stop offset="100%" stop-color="#000" stop-opacity="0.5"/>
   </linearGradient>
-</svg>
+</svg>`;
+
+async function gen(size: number, name: string, maskable = false) {
+  const svg = Buffer.from(crest(size));
+  let pipeline = sharp(svg).resize(size, size);
+  if (maskable) {
+    // maskable: keep content within safe zone (80% center) — already padded by rounded bg
+    pipeline = sharp(
+      Buffer.from(`<svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${size}">
+        <defs><clipPath id="c"><rect width="${size}" height="${size}" rx="0"/></clipPath></defs>
+        <rect width="${size}" height="${size}" fill="#0a0a0c"/>
+      </svg>`)
+    ).composite([{ input: svg, blend: 'over' }]).resize(size, size);
+  }
+  await pipeline.png().toFile(join(OUT, name));
+  console.log('wrote', name);
+}
+
+await gen(192, 'icon-192.png');
+await gen(512, 'icon-512.png');
+await gen(512, 'icon-512-maskable.png', true);
+await gen(180, 'apple-touch-icon.png');
+await gen(32, 'favicon-32.png');
+await gen(16, 'favicon-16.png');
+
+// ICO-style favicon.svg replacement
+writeFileSync(join(process.cwd(), 'public', 'logo.svg'), crest(512), 'utf8');
+console.log('wrote public/logo.svg');
+console.log('Done.');
