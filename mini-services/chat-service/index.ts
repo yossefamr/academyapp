@@ -13,17 +13,26 @@ const io = new Server(httpServer, {
 
 const onlineUsers = new Map<string, { id: string; name: string; photo: string; role: string }>();
 
+// Dedupe by user id & filter invalid entries, then broadcast
+function broadcastPresence() {
+  const byId = new Map<string, { id: string; name: string; photo: string; role: string }>();
+  for (const u of onlineUsers.values()) {
+    if (u && typeof u === 'object' && u.id && u.name) {
+      byId.set(u.id, u);
+    }
+  }
+  io.emit('presence', { online: Array.from(byId.values()) });
+}
+
 io.on('connection', (socket) => {
   console.log(`[chat] connected: ${socket.id}`);
 
   // Client identifies itself with member info after auth
   socket.on('identify', (data: { id: string; name: string; photo: string; role: string }) => {
-    if (!data?.id) return;
+    if (!data || typeof data !== 'object' || !data.id || !data.name) return;
     onlineUsers.set(socket.id, data);
     socket.data.user = data;
-    io.emit('presence', {
-      online: Array.from(new Map(onlineUsers.values()).entries()).map(([, v]) => v),
-    });
+    broadcastPresence();
   });
 
   // Real-time message broadcast. Persistence is handled by the Next.js API,
@@ -54,9 +63,7 @@ io.on('connection', (socket) => {
     const u = onlineUsers.get(socket.id);
     if (u) {
       onlineUsers.delete(socket.id);
-      io.emit('presence', {
-        online: Array.from(new Map(onlineUsers.values()).entries()).map(([, v]) => v),
-      });
+      broadcastPresence();
     }
     console.log(`[chat] disconnected: ${socket.id}`);
   });

@@ -79,7 +79,13 @@ export default function ChatScreen() {
     });
 
     socket.on('presence', (data: { online: { id: string; name: string; photo: string; role: string }[] }) => {
-      setOnline(data.online || []);
+      const list = Array.isArray(data?.online) ? data.online : [];
+      // Filter out null/malformed entries & dedupe by user id
+      const valid = list.filter((o): o is { id: string; name: string; photo: string; role: string } =>
+        !!o && typeof o === 'object' && !!o.id && !!o.name
+      );
+      const byId = new Map(valid.map((o) => [o.id, o]));
+      setOnline(Array.from(byId.values()));
     });
 
     socket.on('typing', (data: { name: string; isTyping: boolean }) => {
@@ -291,12 +297,12 @@ export default function ChatScreen() {
               <p className="p-4 text-center text-xs text-muted-foreground">No wolves online.</p>
             ) : (
               <ul className="space-y-1">
-                {online.map((o) => (
+                {online.filter(Boolean).map((o) => (
                   <li key={o.id} className="flex items-center gap-2 rounded-lg px-2 py-1.5 hover:bg-muted/50">
                     <div className="relative">
                       <Avatar className="h-7 w-7 border border-border/40">
-                        <AvatarImage src={o.photo} alt={o.name} />
-                        <AvatarFallback className="text-[10px] font-bold">{o.name.charAt(0)}</AvatarFallback>
+                        <AvatarImage src={o.photo || ''} alt={o.name} />
+                        <AvatarFallback className="text-[10px] font-bold">{(o.name || '?').charAt(0)}</AvatarFallback>
                       </Avatar>
                       <span className="absolute -bottom-0.5 -right-0.5 h-2.5 w-2.5 rounded-full border-2 border-card bg-green-500" />
                     </div>
