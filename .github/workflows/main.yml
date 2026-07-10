@@ -1,0 +1,6 @@
+{
+  "appId": "com.lycans.fightclub",
+  "appName": "Lycans Fight Club",
+  "webDir": "out",
+  "bundledWebRuntime": false
+}
