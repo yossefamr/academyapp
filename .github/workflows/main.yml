@@ -18,15 +18,17 @@ jobs:
     - name: Install Dependencies 📦
       run: bun install
 
-    - name: Next.js Export 🧪
+    - name: Next.js Build 🧪
       run: |
         bun run build
-        ls -R
+        # هنشوف الملفات تاني بس هنركز على الروت
+        ls -F
 
     - name: Sync Capacitor 🔄
       run: |
         bun add -d @capacitor/cli @capacitor/android
-        echo '{"appId": "com.lycans.fightclub", "appName": "Lycans Fight Club", "webDir": "out", "bundledWebRuntime": false}' > capacitor.config.json
+        # هنجرب نخلي الـ webDir فاضي أو بيبص على الروت لو الـ build بيطلع ملفات هنا
+        echo '{"appId": "com.lycans.fightclub", "appName": "Lycans Fight Club", "webDir": ".", "bundledWebRuntime": false}' > capacitor.config.json
         bunx cap sync
 
     - name: Setup Java ☕
