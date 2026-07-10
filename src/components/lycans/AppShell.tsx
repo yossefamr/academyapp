@@ -4,6 +4,7 @@ import { LogOut, Home, MessageSquare, Star, Shield, Swords } from 'lucide-react'
 import { useAppStore } from '@/store/app-store';
 import { ClawMarks } from '@/components/lycans/logo';
 import ThemeToggle from '@/components/lycans/ThemeToggle';
+import InstallButton from '@/components/lycans/InstallButton';
 import { RoleBadge, SkillBadge, RankBadge } from '@/components/lycans/badges';
 import { cn } from '@/lib/utils';
 import type { ScreenView } from '@/lib/types';
@@ -66,6 +67,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
         </nav>
 
         <div className="flex items-center gap-2">
+          <InstallButton />
           <ThemeToggle />
           <div className="flex items-center gap-2.5">
             <Avatar className="h-9 w-9 border-2 border-blood/40">

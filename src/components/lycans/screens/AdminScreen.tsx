@@ -4,8 +4,9 @@ import { useEffect, useState, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   Shield, Users, Crown, Search, Loader2, Phone, Calendar, Swords,
-  Save, ChevronUp, ChevronDown, X, Star, TrendingUp, Award, ScanLine,
+  Save, ChevronUp, ChevronDown, X, Star, TrendingUp, Award, ScanLine, QrCode,
 } from 'lucide-react';
+import { QRCodeSVG } from 'qrcode.react';
 import { useAppStore } from '@/store/app-store';
 import { PageHeader } from '@/components/lycans/AppShell';
 import { SkillBadge, RankBadge, RoleBadge } from '@/components/lycans/badges';
@@ -19,7 +20,7 @@ import { SKILL_LABELS, SKILL_ORDER, RANK_TITLES } from '@/lib/types';
 import { cn } from '@/lib/utils';
 import QRScanner from '@/components/lycans/QRScanner';
 
-type Tab = 'trainees' | 'rankings' | 'overview';
+type Tab = 'trainees' | 'qrcodes' | 'rankings' | 'overview';
 
 export default function AdminScreen() {
   const user = useAppStore((s) => s.user);
@@ -68,6 +69,7 @@ export default function AdminScreen() {
 
   const tabs: { id: Tab; label: string; icon: typeof Users; superOnly?: boolean }[] = [
     { id: 'trainees', label: 'Trainees', icon: Users },
+    { id: 'qrcodes', label: 'QR Codes', icon: QrCode },
     { id: 'rankings', label: 'Rankings', icon: Crown, superOnly: true },
     { id: 'overview', label: 'Overview', icon: TrendingUp },
   ];
@@ -176,6 +178,8 @@ export default function AdminScreen() {
           </div>
         </div>
       )}
+
+      {tab === 'qrcodes' && <QRCodesTab members={members} onScan={() => setScannerOpen(true)} />}
 
       {tab === 'rankings' && isSuperAdmin && (
         <RankingsManager members={members} currentUserId={user.id} onUpdate={fetchMembers} />
@@ -563,6 +567,102 @@ function OverviewTab({ members }: { members: Member[] }) {
           ))}
         </div>
       </Card>
+    </div>
+  );
+}
+
+/* ===== QR Codes tab — grid of every trainee's scannable QR ===== */
+function QRCodesTab({ members, onScan }: { members: Member[]; onScan: () => void }) {
+  const { toast } = useToast();
+  const [query, setQuery] = useState('');
+  const trainees = members
+    .filter((m) => m.role === 'TRAINEE' || m.role === 'ADMIN' || m.role === 'SUPER_ADMIN')
+    .filter((m) =>
+      m.name.toLowerCase().includes(query.toLowerCase()) ||
+      (m.discipline || '').toLowerCase().includes(query.toLowerCase())
+    );
+
+  async function copyCode(m: Member) {
+    try {
+      await navigator.clipboard.writeText(`LYC:${m.id}`);
+      toast({ title: `Copied code for ${m.name}` });
+    } catch { /* ignore */ }
+  }
+
+  return (
+    <div className="space-y-4">
+      <Card className="border-border/50 bg-card/60 backdrop-blur">
+        <div className="flex flex-col gap-3 p-4 sm:flex-row sm:items-center sm:justify-between">
+          <div className="flex items-center gap-3">
+            <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-blood/15">
+              <QrCode className="h-5 w-5" style={{ color: 'var(--blood)' }} />
+            </div>
+            <div>
+              <h2 className="font-display text-sm tracking-widest">PACK QR CODES</h2>
+              <p className="text-xs text-muted-foreground">اعرض أو اطبع أكواد الحضور لكل المقاتلين</p>
+            </div>
+          </div>
+          <Button
+            onClick={onScan}
+            className="rounded-full px-5 font-bold uppercase tracking-wider"
+            style={{ background: 'linear-gradient(90deg, var(--blood), color-mix(in oklch, var(--blood) 55%, black))', color: 'white' }}
+          >
+            <ScanLine className="mr-2 h-4 w-4" /> امسح الكود · Scan
+          </Button>
+        </div>
+        <div className="border-t border-border/50 p-3">
+          <div className="relative">
+            <Search className="absolute left-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+            <Input
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              placeholder="ابحث عن مقاتل…"
+              className="border-border/60 bg-background/60 pl-8 text-sm"
+            />
+          </div>
+        </div>
+      </Card>
+
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
+        {trainees.map((m, i) => (
+          <motion.div
+            key={m.id}
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: Math.min(i * 0.03, 0.4) }}
+          >
+            <Card className="flex flex-col items-center gap-3 border-border/50 bg-card/60 p-4 text-center backdrop-blur">
+              <div className="flex w-full items-center gap-2 self-start">
+                <Avatar className="h-8 w-8 border border-border/40">
+                  <AvatarImage src={m.photo} alt={m.name} />
+                  <AvatarFallback className="bg-blood/20 text-blood font-bold text-xs">{m.name.charAt(0)}</AvatarFallback>
+                </Avatar>
+                <div className="min-w-0 flex-1 text-left">
+                  <p className="truncate text-xs font-bold">{m.name}</p>
+                  <p className="truncate text-[10px] uppercase tracking-wider text-muted-foreground">{m.rankTitle}</p>
+                </div>
+                <RoleBadge role={m.role} />
+              </div>
+              <div className="rounded-xl bg-white p-3">
+                <QRCodeSVG value={`LYC:${m.id}`} size={120} level="M" fgColor="#0a0a0c" bgColor="#ffffff" />
+              </div>
+              <p className="font-mono text-[9px] text-muted-foreground/70">LYC:{m.id.slice(-8).toUpperCase()}</p>
+              <button
+                onClick={() => copyCode(m)}
+                className="w-full rounded-full border border-border/60 py-1.5 text-[10px] font-bold uppercase tracking-wider text-muted-foreground transition-colors hover:border-blood/50 hover:text-blood"
+              >
+                نسخ الكود · Copy
+              </button>
+            </Card>
+          </motion.div>
+        ))}
+      </div>
+      {trainees.length === 0 && (
+        <div className="flex flex-col items-center gap-2 p-10 text-center text-muted-foreground">
+          <QrCode className="h-8 w-8 opacity-40" />
+          <p className="text-sm">لا توجد أكواد. No fighters found.</p>
+        </div>
+      )}
     </div>
   );
 }

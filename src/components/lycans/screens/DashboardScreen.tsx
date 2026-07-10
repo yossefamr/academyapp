@@ -1,11 +1,10 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { QRCodeSVG } from 'qrcode.react';
 import { motion } from 'framer-motion';
 import {
   Phone, Calendar, Flame, QrCode, ScanLine, MessageSquare, Star,
-  TrendingUp, Clock, Swords, Moon, Award, Activity, Download,
+  TrendingUp, Clock, Swords, Moon, Award, Activity,
 } from 'lucide-react';
 import { useAppStore } from '@/store/app-store';
 import { PageHeader } from '@/components/lycans/AppShell';
@@ -14,6 +13,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import QRScanner from '@/components/lycans/QRScanner';
+import QRPassModal from '@/components/lycans/QRPassModal';
 import type { Attendance, Member } from '@/lib/types';
 import { SKILL_LABELS, SKILL_ORDER } from '@/lib/types';
 
@@ -23,7 +23,7 @@ export default function DashboardScreen() {
   const [attendance, setAttendance] = useState<Attendance[]>([]);
   const [count, setCount] = useState(0);
   const [scannerOpen, setScannerOpen] = useState(false);
-  const [showQR, setShowQR] = useState(false);
+  const [passOpen, setPassOpen] = useState(false);
 
   const isAdmin = user?.role === 'ADMIN' || user?.role === 'SUPER_ADMIN';
 
@@ -40,7 +40,6 @@ export default function DashboardScreen() {
 
   if (!user) return null;
 
-  const qrValue = `LYC:${user.id}`;
   const skillIdx = SKILL_ORDER.indexOf(user.skillLevel);
   const skillProgress = ((skillIdx + 1) / SKILL_ORDER.length) * 100;
 
@@ -110,10 +109,10 @@ export default function DashboardScreen() {
               <Button
                 variant="outline"
                 size="sm"
-                onClick={() => setShowQR((s) => !s)}
-                className="rounded-full border-blood/40 text-xs uppercase tracking-wider hover:bg-blood/10"
+                onClick={() => setPassOpen(true)}
+                className="rounded-full border-blood/40 text-xs uppercase tracking-wider hover:bg-blood/10 animate-pulse-blood"
               >
-                <QrCode className="mr-1.5 h-3.5 w-3.5" /> {showQR ? 'Hide' : 'Show'} My QR
+                <QrCode className="mr-1.5 h-3.5 w-3.5" /> باس الحضور · My QR
               </Button>
             </div>
 
@@ -163,26 +162,6 @@ export default function DashboardScreen() {
               </div>
             </div>
           </div>
-
-          {/* QR reveal */}
-          {showQR && (
-            <motion.div
-              initial={{ height: 0, opacity: 0 }}
-              animate={{ height: 'auto', opacity: 1 }}
-              className="border-t border-border/50 bg-background/40 p-5"
-            >
-              <div className="flex flex-col items-center gap-3 sm:flex-row sm:items-center sm:justify-center">
-                <div className="rounded-2xl bg-white p-4">
-                  <QRCodeSVG value={qrValue} size={140} level="H" fgColor="#0a0a0c" bgColor="#ffffff" />
-                </div>
-                <div className="text-center sm:text-left">
-                  <p className="font-display text-sm tracking-widest text-blood">YOUR PACK PASS</p>
-                  <p className="mt-1 max-w-xs text-xs text-muted-foreground">Show this to the coach at arrival & departure to log your session.</p>
-                  <p className="mt-2 font-mono text-[10px] text-muted-foreground/70">{qrValue}</p>
-                </div>
-              </div>
-            </motion.div>
-          )}
         </Card>
 
         {/* Stats grid */}
@@ -269,6 +248,7 @@ export default function DashboardScreen() {
       </Card>
 
       <QRScanner open={scannerOpen} onClose={() => setScannerOpen(false)} />
+      <QRPassModal open={passOpen} onClose={() => setPassOpen(false)} />
     </div>
   );
 }

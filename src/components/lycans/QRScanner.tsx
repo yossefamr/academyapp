@@ -79,9 +79,33 @@ export default function QRScanner({ open, onClose }: { open: boolean; onClose: (
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || 'Scan failed');
       setResult(data);
+
+      // Haptic feedback (vibrate on success)
+      if (typeof navigator !== 'undefined' && 'vibrate' in navigator) {
+        try { navigator.vibrate(data.action === 'checkin' ? [120, 50, 120] : [200]); } catch { /* ignore */ }
+      }
+      // Soft success beep using Web Audio
+      try {
+        const AC = (window.AudioContext || (window as any).webkitAudioContext);
+        if (AC) {
+          const ctx = new AC();
+          const osc = ctx.createOscillator();
+          const gain = ctx.createGain();
+          osc.connect(gain); gain.connect(ctx.destination);
+          osc.type = 'sine';
+          osc.frequency.value = data.action === 'checkin' ? 880 : 660;
+          gain.gain.setValueAtTime(0.001, ctx.currentTime);
+          gain.gain.exponentialRampToValueAtTime(0.18, ctx.currentTime + 0.02);
+          gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.32);
+          osc.start();
+          osc.stop(ctx.currentTime + 0.34);
+          setTimeout(() => ctx.close(), 600);
+        }
+      } catch { /* ignore */ }
+
       toast({
-        title: data.action === 'checkin' ? `${data.member.name} checked in` : `${data.member.name} checked out`,
-        description: data.action === 'checkout' && data.durationMin ? `Trained ${data.durationMin} min` : 'Arrival logged',
+        title: data.action === 'checkin' ? `✓ تم تسجيل الحضور — ${data.member.name}` : `✓ تم تسجيل الانصراف — ${data.member.name}`,
+        description: data.action === 'checkout' && data.durationMin ? `مدة التمرين: ${data.durationMin} دقيقة` : `تمام ${new Date(data.checkIn).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`,
       });
       // pause scanner briefly
       const html5 = scannerRef.current;
@@ -90,6 +114,10 @@ export default function QRScanner({ open, onClose }: { open: boolean; onClose: (
         setTimeout(() => { if (scannerRef.current) scannerRef.current.resume(); }, 2500);
       }
     } catch (e) {
+      // Error buzz
+      if (typeof navigator !== 'undefined' && 'vibrate' in navigator) {
+        try { navigator.vibrate([60, 40, 60]); } catch { /* ignore */ }
+      }
       setError(e instanceof Error ? e.message : 'Scan failed');
     } finally {
       setBusy(false);
@@ -160,48 +188,79 @@ export default function QRScanner({ open, onClose }: { open: boolean; onClose: (
               </div>
             )}
 
-            {/* Result */}
+            {/* Result — prominent success with Arabic + English */}
             {result && (
               <motion.div
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="mt-4 rounded-2xl border border-blood/30 bg-blood/5 p-4"
+                initial={{ opacity: 0, scale: 0.92 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ type: 'spring', stiffness: 280, damping: 22 }}
+                className="mt-4 overflow-hidden rounded-2xl border-2"
+                style={{
+                  borderColor: result.action === 'checkin' ? 'color-mix(in oklch, var(--blood) 55%, transparent)' : 'color-mix(in oklch, var(--silver) 55%, transparent)',
+                  background: 'linear-gradient(180deg, color-mix(in oklch, ' + (result.action === 'checkin' ? 'var(--blood)' : 'var(--silver)') + ' 14%, transparent), var(--card))',
+                }}
               >
-                <div className="flex items-center gap-3">
+                {/* Big success banner */}
+                <div className="flex flex-col items-center gap-1 px-4 py-4 text-center">
+                  <motion.div
+                    initial={{ scale: 0 }}
+                    animate={{ scale: 1 }}
+                    transition={{ delay: 0.1, type: 'spring', stiffness: 320, damping: 14 }}
+                    className="flex h-16 w-16 items-center justify-center rounded-full"
+                    style={{
+                      background: result.action === 'checkin' ? 'var(--blood)' : 'var(--silver)',
+                      boxShadow: '0 0 32px color-mix(in oklch, ' + (result.action === 'checkin' ? 'var(--blood)' : 'var(--silver)') + ' 60%, transparent)',
+                    }}
+                  >
+                    <CheckCircle2 className="h-9 w-9 text-white" />
+                  </motion.div>
+                  <motion.h3
+                    initial={{ opacity: 0, y: 6 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.2 }}
+                    className="mt-1 font-display text-xl tracking-wide text-foreground"
+                    dir="rtl"
+                  >
+                    {result.action === 'checkin' ? 'تم تسجيل الحضور' : 'تم تسجيل الانصراف'}
+                  </motion.h3>
+                  <p className="text-[11px] font-bold uppercase tracking-[0.2em] text-muted-foreground">
+                    {result.action === 'checkin' ? 'Attendance Recorded' : 'Departure Recorded'}
+                  </p>
+                </div>
+
+                {/* Member card */}
+                <div className="mx-3 mb-3 flex items-center gap-3 rounded-xl bg-background/60 p-3">
                   <Avatar className="h-12 w-12 border-2 border-blood/40">
                     <AvatarImage src={result.member.photo} alt={result.member.name} />
                     <AvatarFallback className="bg-blood/20 text-blood">{result.member.name.charAt(0)}</AvatarFallback>
                   </Avatar>
-                  <div className="flex-1">
-                    <p className="font-bold">{result.member.name}</p>
+                  <div className="flex-1 min-w-0">
+                    <p className="font-bold truncate">{result.member.name}</p>
                     <p className="text-[11px] uppercase tracking-wider text-muted-foreground">{result.member.rankTitle}</p>
                   </div>
-                  <div className="flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-bold uppercase tracking-wider"
-                    style={{
-                      background: result.action === 'checkin' ? 'color-mix(in oklch, var(--blood) 18%, transparent)' : 'color-mix(in oklch, var(--silver) 18%, transparent)',
-                      color: result.action === 'checkin' ? 'var(--blood)' : 'var(--silver)',
-                    }}>
-                    {result.action === 'checkin' ? <LogIn className="h-3.5 w-3.5" /> : <LogOut className="h-3.5 w-3.5" />}
-                    {result.action === 'checkin' ? 'Arrival' : 'Departure'}
+                </div>
+
+                {/* Times */}
+                <div className="mx-3 mb-3 grid grid-cols-2 gap-2 text-xs">
+                  <div className="rounded-lg bg-background/50 p-2.5 text-center">
+                    <p className="text-[10px] uppercase tracking-wider text-muted-foreground">الحضور · In</p>
+                    <p className="mt-0.5 font-mono text-sm font-bold">{new Date(result.checkIn).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</p>
+                  </div>
+                  <div className="rounded-lg bg-background/50 p-2.5 text-center">
+                    <p className="text-[10px] uppercase tracking-wider text-muted-foreground">الانصراف · Out</p>
+                    <p className="mt-0.5 font-mono text-sm font-bold">{result.checkOut ? new Date(result.checkOut).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '—'}</p>
                   </div>
                 </div>
-                <div className="mt-3 grid grid-cols-2 gap-2 text-xs">
-                  <div className="rounded-lg bg-background/50 p-2">
-                    <p className="text-muted-foreground">Check In</p>
-                    <p className="font-mono font-bold">{new Date(result.checkIn).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</p>
-                  </div>
-                  <div className="rounded-lg bg-background/50 p-2">
-                    <p className="text-muted-foreground">Check Out</p>
-                    <p className="font-mono font-bold">{result.checkOut ? new Date(result.checkOut).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '—'}</p>
-                  </div>
-                </div>
+
                 {result.durationMin !== undefined && (
-                  <div className="mt-2 flex items-center gap-1.5 text-xs text-blood">
-                    <CheckCircle2 className="h-3.5 w-3.5" /> Trained {result.durationMin} minutes
+                  <div className="mx-3 mb-3 flex items-center justify-center gap-1.5 rounded-lg bg-blood/10 py-1.5 text-xs font-bold text-blood">
+                    <CheckCircle2 className="h-3.5 w-3.5" /> مدة التمرين: {result.durationMin} دقيقة
                   </div>
                 )}
-                <button onClick={manualRetry} className="mt-3 w-full rounded-full border border-blood/40 py-2 text-xs font-bold uppercase tracking-wider text-blood hover:bg-blood/10">
-                  Scan Next
+
+                <button onClick={manualRetry} className="mx-3 mb-3 w-[calc(100%-1.5rem)] rounded-full py-2.5 text-xs font-bold uppercase tracking-wider text-white"
+                  style={{ background: 'linear-gradient(90deg, var(--blood), color-mix(in oklch, var(--blood) 55%, black))' }}>
+                  مسح الكود التالي · Scan Next
                 </button>
               </motion.div>
             )}
