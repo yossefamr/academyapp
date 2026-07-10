@@ -1,0 +1,87 @@
+// Lycans Fight Club — Prisma schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  SUPER_ADMIN
+  ADMIN
+  TRAINEE
+}
+
+enum SkillLevel {
+  NOVICE
+  ROOKIE
+  WARRIOR
+  VETERAN
+  ELITE
+  APEX
+}
+
+model Member {
+  id             String       @id @default(cuid())
+  email          String       @unique
+  password       String
+  name           String
+  phone          String       @default("")
+  photo          String       @default("")
+  role           Role         @default(TRAINEE)
+  skillLevel     SkillLevel   @default(NOVICE)
+  rank           Int          @default(0)
+  rankTitle      String       @default("Unranked")
+  bio            String       @default("")
+  weightClass    String       @default("")
+  discipline     String       @default("MMA")
+  joinedAt       DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+  attendance     Attendance[]
+  messages       Message[]
+  feedbackGiven  Feedback[]
+}
+
+model Attendance {
+  id         String    @id @default(cuid())
+  memberId   String
+  member     Member    @relation(fields: [memberId], references: [id], onDelete: Cascade)
+  checkIn    DateTime
+  checkOut   DateTime?
+  createdAt  DateTime  @default(now())
+
+  @@index([memberId])
+}
+
+model Message {
+  id         String   @id @default(cuid())
+  memberId   String
+  member     Member   @relation(fields: [memberId], references: [id], onDelete: Cascade)
+  content    String
+  createdAt  DateTime @default(now())
+
+  @@index([memberId])
+}
+
+model ChatRoom {
+  id        String    @id @default("main")
+  isOpen    Boolean   @default(false)
+  openedBy  String?
+  openedAt  DateTime?
+  updatedAt DateTime  @updatedAt
+}
+
+model Feedback {
+  id         String   @id @default(cuid())
+  memberId   String
+  member     Member   @relation(fields: [memberId], references: [id], onDelete: Cascade)
+  rating     Int
+  comment    String
+  category   String   @default("general")
+  createdAt  DateTime @default(now())
+
+  @@index([memberId])
+}

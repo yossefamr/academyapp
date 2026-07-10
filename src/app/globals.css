@@ -1,0 +1,461 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+  --color-sidebar-ring: var(--sidebar-ring);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar: var(--sidebar);
+  --color-chart-5: var(--chart-5);
+  --color-chart-4: var(--chart-4);
+  --color-chart-3: var(--chart-3);
+  --color-chart-2: var(--chart-2);
+  --color-chart-1: var(--chart-1);
+  --color-ring: var(--ring);
+  --color-input: var(--input);
+  --color-border: var(--border);
+  --color-destructive: var(--destructive);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-accent: var(--accent);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-muted: var(--muted);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-secondary: var(--secondary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary: var(--primary);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-popover: var(--popover);
+  --color-card-foreground: var(--card-foreground);
+  --color-card: var(--card);
+  --color-blood: var(--blood);
+  --color-ash: var(--ash);
+  --color-silver: var(--silver);
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+}
+
+:root {
+  --radius: 0.625rem;
+  /* Light theme — pale ash & silver with blood-red accents */
+  --background: oklch(0.965 0.002 270);
+  --foreground: oklch(0.18 0.01 270);
+  --card: oklch(0.99 0.001 270);
+  --card-foreground: oklch(0.18 0.01 270);
+  --popover: oklch(0.99 0.001 270);
+  --popover-foreground: oklch(0.18 0.01 270);
+  --primary: oklch(0.52 0.21 25);
+  --primary-foreground: oklch(0.99 0 0);
+  --secondary: oklch(0.92 0.004 270);
+  --secondary-foreground: oklch(0.2 0.01 270);
+  --muted: oklch(0.93 0.004 270);
+  --muted-foreground: oklch(0.45 0.01 270);
+  --accent: oklch(0.9 0.01 270);
+  --accent-foreground: oklch(0.2 0.01 270);
+  --destructive: oklch(0.52 0.21 25);
+  --border: oklch(0.86 0.005 270);
+  --input: oklch(0.88 0.005 270);
+  --ring: oklch(0.52 0.21 25);
+  --chart-1: oklch(0.52 0.21 25);
+  --chart-2: oklch(0.4 0.01 270);
+  --chart-3: oklch(0.6 0.01 270);
+  --chart-4: oklch(0.7 0.01 270);
+  --chart-5: oklch(0.3 0.01 270);
+  --sidebar: oklch(0.97 0.002 270);
+  --sidebar-foreground: oklch(0.18 0.01 270);
+  --sidebar-primary: oklch(0.52 0.21 25);
+  --sidebar-primary-foreground: oklch(0.99 0 0);
+  --sidebar-accent: oklch(0.92 0.004 270);
+  --sidebar-accent-foreground: oklch(0.2 0.01 270);
+  --sidebar-border: oklch(0.86 0.005 270);
+  --sidebar-ring: oklch(0.52 0.21 25);
+  /* Brand tokens */
+  --blood: oklch(0.52 0.21 25);
+  --ash: oklch(0.3 0.005 270);
+  --silver: oklch(0.72 0.01 270);
+}
+
+.dark {
+  /* Dark theme — pitch black, blood-red, gunmetal, silver */
+  --background: oklch(0.13 0.003 270);
+  --foreground: oklch(0.96 0.003 270);
+  --card: oklch(0.17 0.004 270);
+  --card-foreground: oklch(0.96 0.003 270);
+  --popover: oklch(0.17 0.004 270);
+  --popover-foreground: oklch(0.96 0.003 270);
+  --primary: oklch(0.6 0.22 25);
+  --primary-foreground: oklch(0.99 0 0);
+  --secondary: oklch(0.23 0.005 270);
+  --secondary-foreground: oklch(0.96 0.003 270);
+  --muted: oklch(0.21 0.004 270);
+  --muted-foreground: oklch(0.68 0.005 270);
+  --accent: oklch(0.26 0.02 25);
+  --accent-foreground: oklch(0.96 0.003 270);
+  --destructive: oklch(0.62 0.22 25);
+  --border: oklch(1 0 0 / 8%);
+  --input: oklch(1 0 0 / 12%);
+  --ring: oklch(0.6 0.22 25);
+  --chart-1: oklch(0.62 0.22 25);
+  --chart-2: oklch(0.7 0.005 270);
+  --chart-3: oklch(0.55 0.01 270);
+  --chart-4: oklch(0.45 0.01 270);
+  --chart-5: oklch(0.8 0.01 270);
+  --sidebar: oklch(0.15 0.004 270);
+  --sidebar-foreground: oklch(0.96 0.003 270);
+  --sidebar-primary: oklch(0.6 0.22 25);
+  --sidebar-primary-foreground: oklch(0.99 0 0);
+  --sidebar-accent: oklch(0.22 0.005 270);
+  --sidebar-accent-foreground: oklch(0.96 0.003 270);
+  --sidebar-border: oklch(1 0 0 / 8%);
+  --sidebar-ring: oklch(0.6 0.22 25);
+  /* Brand tokens */
+  --blood: oklch(0.62 0.22 25);
+  --ash: oklch(0.7 0.005 270);
+  --silver: oklch(0.8 0.01 270);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+    font-feature-settings: "ss01";
+  }
+  /* Custom scrollbar — blood & ash */
+  ::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+  ::-webkit-scrollbar-track {
+    background: color-mix(in oklch, var(--background) 80%, black);
+  }
+  ::-webkit-scrollbar-thumb {
+    background: linear-gradient(180deg, var(--blood), color-mix(in oklch, var(--blood) 50%, black));
+    border-radius: 9999px;
+    border: 2px solid transparent;
+    background-clip: padding-box;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: var(--blood);
+    background-clip: padding-box;
+  }
+}
+
+/* ===== Display font for the brand ===== */
+.font-display {
+  font-family: var(--font-geist-sans);
+  letter-spacing: 0.02em;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+/* ===== Blood / claw text glow ===== */
+.text-blood-glow {
+  color: var(--blood);
+  text-shadow: 0 0 18px color-mix(in oklch, var(--blood) 60%, transparent),
+    0 0 4px color-mix(in oklch, var(--blood) 80%, transparent);
+}
+
+/* ===== Claw slash divider ===== */
+.claw-divider {
+  height: 2px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    var(--blood) 20%,
+    color-mix(in oklch, var(--blood) 60%, black) 50%,
+    var(--blood) 80%,
+    transparent
+  );
+  mask-image: linear-gradient(90deg, transparent, black 10%, black 90%, transparent);
+}
+
+/* ===== Animated atmospheric layers ===== */
+/* Moon */
+.atmo-moon {
+  position: absolute;
+  border-radius: 9999px;
+  background: radial-gradient(
+    circle at 35% 35%,
+    color-mix(in oklch, var(--silver) 90%, white 10%),
+    color-mix(in oklch, var(--silver) 60%, black 40%) 70%,
+    color-mix(in oklch, var(--silver) 30%, black 70%) 100%
+  );
+  box-shadow:
+    0 0 60px 12px color-mix(in oklch, var(--silver) 40%, transparent),
+    0 0 140px 40px color-mix(in oklch, var(--silver) 20%, transparent),
+    inset -12px -12px 30px color-mix(in oklch, black 60%, transparent);
+  pointer-events: none;
+}
+
+/* Rain */
+.atmo-rain {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image: repeating-linear-gradient(
+    105deg,
+    transparent 0,
+    transparent 6px,
+    color-mix(in oklch, var(--silver) 22%, transparent) 6px,
+    color-mix(in oklch, var(--silver) 22%, transparent) 7px
+  );
+  background-size: 120px 120px;
+  animation: rain-fall 0.55s linear infinite;
+  opacity: 0.35;
+  mask-image: linear-gradient(180deg, transparent, black 30%, black 70%, transparent);
+}
+@keyframes rain-fall {
+  from { background-position: 0 0; }
+  to { background-position: 0 120px; }
+}
+
+/* Lightning flash overlay */
+.atmo-lightning {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: radial-gradient(
+    ellipse at 70% 0%,
+    color-mix(in oklch, var(--silver) 55%, white 20%),
+    transparent 60%
+  );
+  opacity: 0;
+  animation: lightning 11s infinite;
+}
+@keyframes lightning {
+  0%, 92%, 100% { opacity: 0; }
+  93% { opacity: 0.85; }
+  94% { opacity: 0.1; }
+  95% { opacity: 0.7; }
+  96% { opacity: 0; }
+}
+
+/* Smoke veil */
+.atmo-smoke {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(ellipse at 20% 80%, color-mix(in oklch, var(--blood) 10%, transparent), transparent 50%),
+    radial-gradient(ellipse at 80% 20%, color-mix(in oklch, var(--silver) 8%, transparent), transparent 55%),
+    radial-gradient(ellipse at 50% 50%, color-mix(in oklch, black 30%, transparent), transparent 70%);
+  mix-blend-mode: screen;
+  animation: smoke-drift 18s ease-in-out infinite alternate;
+}
+@keyframes smoke-drift {
+  from { transform: translate3d(-3%, 2%, 0) scale(1.05); opacity: 0.6; }
+  to { transform: translate3d(3%, -2%, 0) scale(1.12); opacity: 0.9; }
+}
+
+/* Diagonal blood streaks (login bg) */
+.atmo-streaks {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image: repeating-linear-gradient(
+    115deg,
+    transparent 0,
+    transparent 38px,
+    color-mix(in oklch, var(--blood) 8%, transparent) 38px,
+    color-mix(in oklch, var(--blood) 8%, transparent) 39px,
+    transparent 39px,
+    transparent 90px
+  );
+  opacity: 0.7;
+  mask-image: linear-gradient(180deg, transparent, black 25%, black 75%, transparent);
+}
+
+/* Scanline / vignette */
+.atmo-vignette {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: radial-gradient(ellipse at center, transparent 40%, color-mix(in oklch, black 70%, transparent) 100%);
+}
+
+/* Floating animation */
+@keyframes float-y {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+}
+.animate-float { animation: float-y 5s ease-in-out infinite; }
+
+/* Pulse glow */
+@keyframes pulse-blood {
+  0%, 100% { box-shadow: 0 0 0 0 color-mix(in oklch, var(--blood) 50%, transparent); }
+  50% { box-shadow: 0 0 24px 6px color-mix(in oklch, var(--blood) 35%, transparent); }
+}
+.animate-pulse-blood { animation: pulse-blood 2.6s ease-in-out infinite; }
+
+/* PlasmaWave container */
+.plasma-wave-container {
+  width: 100%;
+  height: 100%;
+}
+
+/* BorderGlow */
+.border-glow-card {
+  --edge-proximity: 0;
+  --cursor-angle: 45deg;
+  --edge-sensitivity: 30;
+  --color-sensitivity: calc(var(--edge-sensitivity) + 20);
+  --border-radius: 28px;
+  --glow-padding: 40px;
+  --cone-spread: 25;
+  position: relative;
+  border-radius: var(--border-radius);
+  isolation: isolate;
+  transform: translate3d(0, 0, 0.01px);
+  display: grid;
+  border: 1px solid rgb(255 255 255 / 15%);
+  background: var(--card-bg, #120F17);
+  overflow: visible;
+  box-shadow:
+    rgba(0, 0, 0, 0.1) 0px 1px 2px,
+    rgba(0, 0, 0, 0.1) 0px 2px 4px,
+    rgba(0, 0, 0, 0.1) 0px 4px 8px,
+    rgba(0, 0, 0, 0.1) 0px 8px 16px,
+    rgba(0, 0, 0, 0.1) 0px 16px 32px,
+    rgba(0, 0, 0, 0.1) 0px 32px 64px;
+}
+.border-glow-card::before,
+.border-glow-card::after,
+.border-glow-card > .edge-light {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  transition: opacity 0.25s ease-out;
+  z-index: -1;
+}
+.border-glow-card:not(:hover):not(.sweep-active)::before,
+.border-glow-card:not(:hover):not(.sweep-active)::after,
+.border-glow-card:not(:hover):not(.sweep-active) > .edge-light {
+  opacity: 0;
+  transition: opacity 0.75s ease-in-out;
+}
+.border-glow-card::before {
+  border: 1px solid transparent;
+  background:
+    linear-gradient(var(--card-bg, #120F17) 0 100%) padding-box,
+    linear-gradient(rgb(255 255 255 / 0%) 0% 100%) border-box,
+    var(--gradient-one, radial-gradient(at 80% 55%, hsla(268, 100%, 76%, 1) 0px, transparent 50%)) border-box,
+    var(--gradient-two, radial-gradient(at 69% 34%, hsla(349, 100%, 74%, 1) 0px, transparent 50%)) border-box,
+    var(--gradient-three, radial-gradient(at 8% 6%, hsla(136, 100%, 78%, 1) 0px, transparent 50%)) border-box,
+    var(--gradient-four, radial-gradient(at 41% 38%, hsla(192, 100%, 64%, 1) 0px, transparent 50%)) border-box,
+    var(--gradient-five, radial-gradient(at 86% 85%, hsla(186, 100%, 74%, 1) 0px, transparent 50%)) border-box,
+    var(--gradient-six, radial-gradient(at 82% 18%, hsla(52, 100%, 65%, 1) 0px, transparent 50%)) border-box,
+    var(--gradient-seven, radial-gradient(at 51% 4%, hsla(12, 100%, 72%, 1) 0px, transparent 50%)) border-box,
+    var(--gradient-base, linear-gradient(#c299ff 0 100%)) border-box;
+  opacity: calc((var(--edge-proximity) - var(--color-sensitivity)) / (100 - var(--color-sensitivity)));
+  mask-image:
+    conic-gradient(
+      from var(--cursor-angle) at center,
+      black calc(var(--cone-spread) * 1%),
+      transparent calc((var(--cone-spread) + 15) * 1%),
+      transparent calc((100 - var(--cone-spread) - 15) * 1%),
+      black calc((100 - var(--cone-spread)) * 1%)
+    );
+}
+.border-glow-card::after {
+  border: 1px solid transparent;
+  background:
+    var(--gradient-one, radial-gradient(at 80% 55%, hsla(268, 100%, 76%, 1) 0px, transparent 50%)) padding-box,
+    var(--gradient-two, radial-gradient(at 69% 34%, hsla(349, 100%, 74%, 1) 0px, transparent 50%)) padding-box,
+    var(--gradient-three, radial-gradient(at 8% 6%, hsla(136, 100%, 78%, 1) 0px, transparent 50%)) padding-box,
+    var(--gradient-four, radial-gradient(at 41% 38%, hsla(192, 100%, 64%, 1) 0px, transparent 50%)) padding-box,
+    var(--gradient-five, radial-gradient(at 86% 85%, hsla(186, 100%, 74%, 1) 0px, transparent 50%)) padding-box,
+    var(--gradient-six, radial-gradient(at 82% 18%, hsla(52, 100%, 65%, 1) 0px, transparent 50%)) padding-box,
+    var(--gradient-seven, radial-gradient(at 51% 4%, hsla(12, 100%, 72%, 1) 0px, transparent 50%)) padding-box,
+    var(--gradient-base, linear-gradient(#c299ff 0 100%)) padding-box;
+  mask-image:
+    linear-gradient(to bottom, black, black),
+    radial-gradient(ellipse at 50% 50%, black 40%, transparent 65%),
+    radial-gradient(ellipse at 66% 66%, black 5%, transparent 40%),
+    radial-gradient(ellipse at 33% 33%, black 5%, transparent 40%),
+    radial-gradient(ellipse at 66% 33%, black 5%, transparent 40%),
+    radial-gradient(ellipse at 33% 66%, black 5%, transparent 40%),
+    conic-gradient(from var(--cursor-angle) at center, transparent 5%, black 15%, black 85%, transparent 95%);
+  mask-composite: subtract, add, add, add, add, add;
+  opacity: calc(var(--fill-opacity, 0.5) * (var(--edge-proximity) - var(--color-sensitivity)) / (100 - var(--color-sensitivity)));
+  mix-blend-mode: soft-light;
+}
+.border-glow-card > .edge-light {
+  inset: calc(var(--glow-padding) * -1);
+  pointer-events: none;
+  z-index: 1;
+  mask-image:
+    conic-gradient(
+      from var(--cursor-angle) at center, black 2.5%, transparent 10%, transparent 90%, black 97.5%
+    );
+  opacity: calc((var(--edge-proximity) - var(--edge-sensitivity)) / (100 - var(--edge-sensitivity)));
+  mix-blend-mode: plus-lighter;
+}
+.border-glow-card > .edge-light::before {
+  content: "";
+  position: absolute;
+  inset: var(--glow-padding);
+  border-radius: inherit;
+  box-shadow:
+    inset 0 0 0 1px var(--glow-color, hsl(40deg 80% 80% / 100%)),
+    inset 0 0 1px 0 var(--glow-color-60, hsl(40deg 80% 80% / 60%)),
+    inset 0 0 3px 0 var(--glow-color-50, hsl(40deg 80% 80% / 50%)),
+    inset 0 0 6px 0 var(--glow-color-40, hsl(40deg 80% 80% / 40%)),
+    inset 0 0 15px 0 var(--glow-color-30, hsl(40deg 80% 80% / 30%)),
+    inset 0 0 25px 2px var(--glow-color-20, hsl(40deg 80% 80% / 20%)),
+    inset 0 0 50px 2px var(--glow-color-10, hsl(40deg 80% 80% / 10%)),
+    0 0 1px 0 var(--glow-color-60, hsl(40deg 80% 80% / 60%)),
+    0 0 3px 0 var(--glow-color-50, hsl(40deg 80% 80% / 50%)),
+    0 0 6px 0 var(--glow-color-40, hsl(40deg 80% 80% / 40%)),
+    0 0 15px 0 var(--glow-color-30, hsl(40deg 80% 80% / 30%)),
+    0 0 25px 2px var(--glow-color-20, hsl(40deg 80% 80% / 20%)),
+    0 0 50px 2px var(--glow-color-10, hsl(40deg 80% 80% / 10%));
+}
+.border-glow-inner {
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  overflow: auto;
+  z-index: 1;
+}
+
+/* Glass panel */
+.glass-panel {
+  background: color-mix(in oklch, var(--card) 70%, transparent);
+  backdrop-filter: blur(14px) saturate(140%);
+  border: 1px solid color-mix(in oklch, var(--silver) 18%, transparent);
+}
+
+/* Sword icon pulse on hover for nav */
+.nav-claw::after {
+  content: "";
+  position: absolute;
+  left: 0; right: 0; bottom: -2px;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--blood), transparent);
+  transform: scaleX(0);
+  transition: transform 0.3s ease;
+}
+.nav-claw:hover::after, .nav-claw[data-active="true"]::after {
+  transform: scaleX(1);
+}
+
+/* hide scrollbar utility */
+.no-scrollbar::-webkit-scrollbar { display: none; }
+.no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+/* QR scanner region */
+#qr-reader video { border-radius: 0.75rem; object-fit: cover; }
