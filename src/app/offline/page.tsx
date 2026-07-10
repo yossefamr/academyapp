@@ -1,3 +1,5 @@
+'use client';
+
 import { ClawMarks } from '@/components/lycans/logo';
 import { Moon } from 'lucide-react';
 
